@@ -27,12 +27,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function startDownload() {
         const filename = input.value;
-        
+
         const url = `https://cyborgintell-assignment.s3.ap-south-1.amazonaws.com/${filename}`;
+
         downloadButton.disabled = true;
         pauseButton.disabled = false;
         resumeButton.disabled = false;
         cancelButton.disabled = false;
+
         try {
             const response = await fetch(url, { method: 'HEAD' });
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -51,14 +53,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         accept: { [contentType]: [`.${fileExtension}`] }
                     }],
                 });
-                downloadFile(url, fileHandle, contentType);
+                downloadFile(url, contentType, filename, fileHandle);
             } else {
-                downloadButton.disabled = false;
-                pauseButton.disabled = true;
-                resumeButton.disabled = true;
-                cancelButton.disabled = true;
-                outputText.textContent = 'Your browser does not support the required features.';
-                traditionalDownload(url, filename);
+                outputText.textContent = 'Your browser does not support the feature of direct download.';
+                downloadFile(url, contentType, filename, null);
             }
         } catch (err) {
             downloadButton.disabled = false;
@@ -70,17 +68,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    async function downloadFile(url, fileHandle, contentType) {
+    async function downloadFile(url, contentType, filename, fileHandle) {
         abortController = new AbortController();
         downloadedSize = 0;
         isPaused = false;
+
 
         try {
             const response = await fetch(url, { signal: abortController.signal });
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
             const reader = response.body.getReader();
-            const writer = await fileHandle.createWritable();
+            const chunks = [];//when the showSaveFilePicker is not supported
+
+            let writer;
+            if (fileHandle) {
+                writer = await fileHandle.createWritable();
+            }
 
             while (true) {
                 const { done, value } = await reader.read();
@@ -89,12 +93,31 @@ document.addEventListener('DOMContentLoaded', () => {
                     pauseButton.disabled = true;
                     resumeButton.disabled = true;
                     cancelButton.disabled = true;
+
+                    if (fileHandle === null) {
+                        const file = new File(chunks, filename, { type: contentType });
+                        const url = URL.createObjectURL(file);
+
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                    }
                     break;
                 }
 
                 console.log(formatBytes(value.length), value)
                 downloadedSize += value.length;
-                await writer.write(value);
+
+                if (writer) {
+                    await writer.write(value);
+                } else {
+                    chunks.push(value);
+                }
 
                 updateProgress(downloadedSize, totalSize);
 
@@ -104,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            await writer.close();
+            if (writer) await writer.close();
 
             outputText.textContent = 'Download complete!';
         } catch (err) {
@@ -146,20 +169,12 @@ document.addEventListener('DOMContentLoaded', () => {
         pauseButton.disabled = true;
         resumeButton.disabled = true;
         cancelButton.disabled = true;
-        // updateProgress(0, 0);
         progressText.textContent = 0;
         progressBar.style.setProperty('--percentage', 0);
         outputText.textContent = 'Download cancelled.';
     }
 
-    function traditionalDownload(url, filename) {
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    }
+
 
     function updateProgress(downloaded, total) {
         const percentage = total ? Math.round((downloaded / total) * 100) : 0;
