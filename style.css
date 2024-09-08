@@ -1,0 +1,115 @@
+:root {
+  --bgcolor: hsl(220, 20%, 70%);
+  --focuscolor: hsl(220, 80%, 50%);
+  --txtcolor: hsl(20, 80%, 50%);
+  --percentage: 0;
+  --size: 150px;
+  --circ: 251.33;
+  /* circumference = diameter * PI */
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+body {
+  background-color: #f4f4f9;
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: #333;
+}
+
+header {
+  margin-bottom: 20px;
+}
+
+h1,
+h2 {
+  margin: 0 0 10px;
+}
+
+main {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+}
+
+.progress {
+  width: var(--size);
+  height: var(--size);
+  margin: 20px auto;
+}
+
+.circle-background {
+  stroke: var(--bgcolor);
+  stroke-width: 10;
+  fill: none;
+}
+
+.circle-progress {
+  stroke: var(--focuscolor);
+  stroke-width: 6;
+  stroke-dasharray: var(--circ);
+  stroke-dashoffset: calc(var(--circ) - (var(--circ) * var(--percentage) / 100));
+  fill: none;
+  transition: stroke-dashoffset 0.3s linear;
+}
+
+.pct-text {
+  fill: var(--txtcolor);
+  font-size: 32px;
+  text-anchor: middle;
+  font-weight: bold;
+}
+
+button {
+  background-color: var(--focuscolor);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: hsl(220, 80%, 60%);
+}
+
+button:disabled {
+  background-color: var(--bgcolor);
+  cursor: not-allowed;
+}
+
+#output {
+  margin: 10px 0;
+  font-size: 14px;
+  color: #666;
+}
+
+ol {
+  text-align: left;
+  padding-left: 20px;
+  margin: 10px 0;
+}
+
+.form-group {
+  margin: 10px 0;
+
+}
+
+#filename {
+  margin: 10px 0px;
+  padding: 5px;
+  width: 240px
+}
+
+video {
+  width: 500px;
+  height: auto;
+}
