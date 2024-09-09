@@ -28,8 +28,8 @@ input.addEventListener('input', (e) => {
 async function startDownload() {
 
     const filename = input.value;
-    const url = `http://127.0.0.1:5500/${filename}`;
-    // const url = `https://cyborgintell-assignment.s3.ap-south-1.amazonaws.com/${filename}`;
+    // const url = `http://127.0.0.1:5500/${filename}`;
+    const url = `https://cyborgintell-assignment.s3.ap-south-1.amazonaws.com/${filename}`;
 
     downloadButton.disabled = true;
     pauseButton.disabled = false;
