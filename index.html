@@ -20,12 +20,12 @@
       <text class="pct-text" x="50" y="63">0</text>
     </svg>
     <p id="output"></p>
-    <div class="form-group">
+    <form class="form-group">
       <label for="filename">Enter full file name with extension</label>
-      <input id="filename" placeholder="data.csv" autofocus type="text"/>
-    </div>
-    <div>
-      <button id="downloadButton" disabled>Download</button>
+      <input id="filename" placeholder="data.csv" autofocus type="text" />
+      <button id="downloadButton" type="submit" disabled>Download</button>
+    </form>
+    <div class="actions">
       <button id="pauseButton" disabled>Pause</button>
       <button id="resumeButton" disabled>Resume</button>
       <button id="cancelButton" disabled>Cancel</button>
